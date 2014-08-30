@@ -89,3 +89,14 @@ body
 {
 	clear: both;
 }
+
+.code_node
+{
+	text-decoration: none;
+}
+
+.code_node:hover
+{
+	color: #686868;
+	text-decoration: underline;
+}
