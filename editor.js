@@ -1,3 +1,6 @@
+var codeId = 0;
+var bubbleId = 0;
+
 window.onload = function()
 {
 	document.getElementById("codein").addEventListener("keydown", function()
@@ -37,34 +40,51 @@ function submitCode()
 	container.scrollTop = container.scrollHeight;
 }
 
-function graphicParse(code)
+function getCodeId(increment)
+{
+	var oldCodeId = codeId;
+	if (increment == true)
+	{
+		codeId++;
+	}
+	return 'code' + oldCodeId;
+}
+
+function getCodeEditor(id)
+{
+	return '<span class="code_node" id="' + id + '"><span class="code_edit_node" onclick="edit(' + "'" + id + "'" + ');">';
+}
+
+function graphicParse(code, generateDivs)
 {
 	var hasComment = false;
-	var returnCode = '<div class="code">';
+	var returnCode = '<div class="code">' + getCodeEditor(getCodeId(true));
 	for (var char = 0; char < code.length; char++)
 	{
 		if ((code.charAt(char) == "(") || (code.charAt(char) == ")"))
 		{
 			if (code.charAt(char) == "(") 
 			{
+				returnCode += "</span></span>";
 				if (hasComment)
 				{
-					returnCode += '<span class="bubble-wrapper"><span class="commentbubble">' 
+					returnCode += '<span class="commentbubble">' + getCodeEditor(getCodeId(true));
 				}
 				else
 				{
-					returnCode += '<span class="bubble-wrapper"><span class="bubble">' 
+					returnCode += '<span class="bubble" id="bubble' + bubbleId + '" onhover="popbubblemenu(' + bubbleId + ');">' + getCodeEditor(getCodeId(true));
+					bubbleId++;
 				}
 
 			}
-			else { returnCode += '</span></span>' }		
+			else { returnCode += '</span></span></span>' + getCodeEditor(getCodeId(true)); }		
 		}
 		else if (code.charAt(char) == "<")
 		{
 			if ((code.charAt(char + 1) == "-") && (code.charAt(char + 2) == "-"))
 			{
 				if (hasComment) { returnCode += '<img src="commentArrow.png">'; }
-				else { returnCode += '<span class="comment"><img src="commentArrow.png">'; }
+				else { returnCode += '</span></span><span class="comment"><img src="commentArrow.png">' + getCodeEditor(getCodeId(true)); }
 				char += 2;
 				hasComment = true;
 			}
@@ -73,6 +93,25 @@ function graphicParse(code)
 		else { returnCode += code.charAt(char); }
 	}
 	if (hasComment) { returnCode += '</span>'; }
-	returnCode += '</div><span class="clearer"></span>'
+	returnCode += '</span></span></div><span class="clearer"></span>'
 	return returnCode;
+}
+
+function popbubblemenu(id)
+{
+	
+}
+
+function edit(id)
+{
+	tag = document.getElementById(id);
+	oldText = tag.childNodes[0].innerHTML;
+	tag.innerHTML = '<input type="text" value="' + oldText + '" id="edit' + id + '"/><button onclick="finishedit(' + "'" + id + "'" + ');">Finish</button>';
+}
+
+function finishedit(id)
+{
+	tag = document.getElementById(id);
+	newText = document.getElementById("edit" + id).value;
+	tag.innerHTML = '<span class=""code_edit_node onclick="edit(' + "'" + id + "'" + ');">' + newText + '</span>';
 }
